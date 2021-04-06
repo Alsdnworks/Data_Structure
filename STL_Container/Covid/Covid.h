@@ -1,8 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include<iostream>
 #include<vector>
 #include<algorithm>
 #include<string>
+#include <iomanip>
 
 using namespace std;
 
@@ -15,23 +16,24 @@ typedef struct C_INFO
 }C_INFO;
 
 class Corona_World
+
 {
 public:
-	Corona_World();
-	Corona_World(const C_INFO& input);
-	Corona_World(const vector<C_INFO>& input_list);
-	~Corona_World();
+	Corona_World() {};
+	Corona_World(const C_INFO& input) {};
+	Corona_World(const vector<C_INFO>& input_list) {};
+	~Corona_World() {};
 
 	bool NewData(const C_INFO& input);
-	bool DelData(string name);
 
 	friend bool Arg_Rege(const C_INFO& a, const C_INFO& b);
 	friend bool Arg_Pati(const C_INFO& a, const C_INFO& b);
 	friend bool Arg_Dead(const C_INFO& a, const C_INFO& b);
 	friend bool Arg_Rate(const C_INFO& a, const C_INFO& b);
+	void Print(const vector<C_INFO>& list);
+	bool DelData(string name);
 	void Menu(int num);
-	void cmp_Menu(int num);
-	int option();
+	void cmp_Menu(int num2);
 
 private:
 	vector<C_INFO>list;
@@ -40,82 +42,108 @@ private:
 
 
 
-bool Corona_World::NewData(const C_INFO& input)
-{
+bool Corona_World::NewData(const C_INFO& input){
 	list.push_back(input);
 	return true;
 }
 
-bool Arg_Rege(const C_INFO& a, const C_INFO& b)
-{
+bool Arg_Rege(const C_INFO& a, const C_INFO& b){
 	return a.Rege < b.Rege;
 }
-bool Arg_Pati(const C_INFO& a, const C_INFO& b)
-{
+bool Arg_Pati(const C_INFO& a, const C_INFO& b){
 	return a.Pati < b.Pati;
 }
-bool Arg_Dead(const C_INFO& a, const C_INFO& b)
-{
+bool Arg_Dead(const C_INFO& a, const C_INFO& b){
 	return a.Dead < b.Dead;
 }
-bool Arg_Rate(const C_INFO& a, const C_INFO& b)
-{
+bool Arg_Rate(const C_INFO& a, const C_INFO& b){
 	return a.D_Rate < b.D_Rate;
 }
-/*
+
 bool Corona_World::DelData(string name) {
 		int Tcount = 0;
-		string input_iterator_tag;
-		cin >> input_iterator_tag;
-		index.push_back(input_iterator_tag);
 
-		for (index.begin(); index!=list.end(); index=index+5){
-			if (strcmp(key,index)==0) {
-				index=list.erase(index);
+		vector<C_INFO>::iterator itr = list.begin();
+		for (; itr != list.end(); ++itr) {
+			if ((*itr).Rege == name) {
+				list.erase(itr);
+				if (list.size() == 0) {
+					list.resize(1);
+				}
+				itr = list.begin();
 				Tcount++;
 			}
 		}
-		cout << Tcount << "°³ÀÇ µ¥ÀÌÅÍ°¡ »èÁ¦µÇ¾ú½À´Ï´Ù." << endl;
+		cout << Tcount << "ê°œì˜ ë°ì´í„°ê°€ ì‚­ì œë˜ì—ˆìŠµë‹ˆë‹¤.\n" << endl;
+		return true;
+		//1ê°œì˜ ê°’ì¤‘ 1ê°œê°€ ì§€ì›Œì§€ë©´ ì´í„°ë ˆì´í„° ì˜¤ë¥˜ë°œìƒ
 	}
-	*/
 
-void Corona_World::Menu(int num)
-{
-	switch (num)
-	{
+
+void Corona_World::Menu(int num){
+	C_INFO data;
+	string name;
+	double m_Drate;
+	switch (num){
 	case 1:
-		bool NewData();
+		
+		cout << "êµ­ê°€ëª…: "; cin >> data.Rege;
+		cout << "í™˜ìžìˆ˜: "; cin >> data.Pati;
+		cout << "ì‚¬ë§ìž: "; cin >> data.Dead;
+		m_Drate = ((float)data.Dead / (float)data.Pati);
+		data.D_Rate=m_Drate;
+		Corona_World::NewData(data);
 		break;
 	case 2:
-		bool DelData();
+		printf("ì‚­ì œí•  êµ­ê°€ë°ì´í„°ì˜ ì§€ì—­ëª…ì„ ìž…ë ¥í•˜ì„¸ìš”.\n\n");
+		cin >> name;
+		Corona_World::DelData(name);
 		break;
-	case 3:
-		void menu2();
+	case 3:	
+		int set2;
+		cout  << "ìž…ë ¥ê°’ì„ ê¸°ì¤€ìœ¼ë¡œ ë°ì´í„°ë¥¼ ì¶œë ¥í•©ë‹ˆë‹¤\n"
+		<< "1.ì§€ì—­ëª… ìˆœìœ¼ë¡œ ì¶œë ¥\n"
+		<< "2.ë°œë³‘ìˆ«ìž ìˆœìœ¼ë¡œ ì¶œë ¥\n"
+		<< "3.ì‚¬ë§ìž ìˆœìœ¼ë¡œ ì¶œë ¥\n"
+		<< "4.ì‚¬ë§ë¥  ìˆœìœ¼ë¡œ ì¶œë ¥\n" << endl;
+		cin >> set2;
+		cmp_Menu(set2);
 		break;
 	default:
 		break;
 	}
 }
 
-void Corona_World::cmp_Menu(int num) {
-	cout << "ÀÔ·Â°ªÀ» ±âÁØÀ¸·Î µ¥ÀÌÅÍ¸¦ Ãâ·ÂÇÕ´Ï´Ù\n"
-		<< "1.Áö¿ª¸í ¼øÀ¸·Î Ãâ·Â\n"
-		<< "2.¹ßº´¼ýÀÚ ¼øÀ¸·Î Ãâ·Â\n"
-		<< "3.»ç¸ÁÀÚ ¼øÀ¸·Î Ãâ·Â\n"
-		<< "4.»ç¸Á·ü ¼øÀ¸·Î Ãâ·Â\n" << endl;
-	switch (num)
-	{
+void Corona_World::cmp_Menu(int num2) {
+	int i=0;
+	cout.precision(3);
+	cout.setf(ios::left);
+	cout << "ë°œìƒì§€ì—­" << "   " << "ì´í™˜ìžìˆ˜" << "   " << "ì‚¬ë§ìžìˆ˜" << "   " << "ì‚¬ë§ë¥ " << endl;
+
+	switch (num2){
 	case 1:
 		sort(list.begin(), list.end(), Arg_Rege);
+		for (i =0; i < list.size(); i++) {
+			cout<< setw(11) <<  list[i].Rege << setw(11) << list[i].Pati<< setw(11) << list[i].Dead<< setw(11) << list[i].D_Rate<< endl;
+		}
 		break;
 	case 2:
 		sort(list.begin(), list.end(), Arg_Pati);
+		for (i = 0; i < list.size(); i++) {
+			cout << setw(11) << list[i].Rege << setw(11) << list[i].Pati << setw(11) << list[i].Dead << setw(11) << list[i].D_Rate << endl;
+		}
 		break;
 	case 3:
 		sort(list.begin(), list.end(), Arg_Dead);
+		for (i = 0; i < list.size(); i++) {
+			cout << setw(11) << list[i].Rege << setw(11) << list[i].Pati << setw(11) << list[i].Dead << setw(11) << list[i].D_Rate << endl;
+		}
 		break;
 	case 4:
 		sort(list.begin(), list.end(), Arg_Rate);
+		for (i = 0; i < list.size(); i++) {
+			cout << setw(11) << list[i].Rege << setw(11) << list[i].Pati << setw(11) << list[i].Dead << setw(11) << list[i].D_Rate << endl;
+		}
 		break;
 	default:
 		break;
