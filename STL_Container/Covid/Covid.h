@@ -4,6 +4,7 @@
 #include<algorithm>
 #include<string>
 #include <iomanip>
+#include<cctype>
 
 using namespace std;
 
@@ -29,6 +30,7 @@ class Corona_World {
 		bool DelData(string name);
 		void Menu(int num);
 		void cmp_Menu(int num2);
+		bool intcheck(string context);
 	private:
 		vector<C_Database>list;
 };
@@ -53,19 +55,18 @@ bool Arg_Rate(const C_Database& a, const C_Database& b) {
 }
 
 bool Corona_World::DelData(string name) {
-	int Tcount = 0;
+	bool Tcount ;
 	vector<C_Database>::iterator itr = list.begin();
-	for (; itr != list.end(); ++itr) {
-		if ((*itr).Rege == name) {//스택오버플로에서 찾은 자료로했는데 말이 너무어려워서 이해포기 왜 포인터형식인가?
-			list.erase(itr);
-			if (list.size() == 0) {//이터레이터가 0일때 런타임오류생겨서 해둔조치 
-				list.resize(1);
-			}
-			itr = list.begin();
-			Tcount++;
+		for (; itr != list.end() ; ++itr) {
+				if (itr->Rege == name) {//스택오버플로에서 찾은 자료로했는데 말이 너무어려워서 이해포기 왜 포인터형식인가?
+					list.erase(itr);
+					itr = list.begin();
+					Tcount=true;
+					if (list.size() == 0)
+						break;
+				}
 		}
-	}
-	if (Tcount == 0) {
+	if (Tcount == false) {
 		cout << "입력한 국가명이 데이터베이스에 없습니다. 확인후 다시 시도하십시오. .\n" << endl;
 	}
 	else cout << "성공적으로 삭제되었습니다." << endl;
