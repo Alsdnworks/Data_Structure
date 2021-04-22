@@ -3,7 +3,7 @@
 
 using namespace std;
 
-class corona_nation{
+class corona_nation {
 public:
     corona_nation(string name = "empty", int num_of_confirmed_p = 0, int num_of_death_p = 0);
     ~corona_nation() {};
@@ -15,9 +15,9 @@ public:
 };
 
 template<class T>
-class DLLNode{
+class DLLNode {
 public:
-    DLLNode(){
+    DLLNode() {
         next = prev = NULL;
     }
     DLLNode(const T& el, DLLNode* n = NULL, DLLNode* p = NULL) {
@@ -26,78 +26,80 @@ public:
         prev = p;
     }
     ~DLLNode() {};
-    T info; //데이터를 저장할 멤버변수
+    T info;
     DLLNode* next, * prev;
 };
 
 template<class T>
-class DLL{
+class DLL {
 public:
-    DLL(){
-        head = NULL; // null로 지정하지 않으면?
+    DLL() {
+        head = NULL;
     }
-    ~DLL(){
-        for (DLLNode<T>* p=new DLLNode<T>; p != NULL; ){
+    ~DLL() {
+        for (DLLNode<T>* p = new DLLNode<T>; p != NULL; ) {
             p = head->next;
             delete head;
             head = p;
         }
     }
-    void AddtoDLLSorted(const T& el);  //구현할것
-    void deleteDLLSorted(const string& name); // 구현할것
-    void printtDLLSorted(int option); //구현할것
+    void AddtoDLLSorted(const T& el);
+    void deleteDLLSorted(const string& name);
+    void printtDLLSorted(int option);
+    string Nameformat(string& name);
+
 private:
-    DLLNode<T>* head,*tail;
+    DLLNode<T>* head, * tail;
 };
 
 template<class T>
-void DLL<T>::AddtoDLLSorted(const T& el){
-    DLLNode<T>* newIn=new DLLNode<T>;
+void DLL<T>::AddtoDLLSorted(const T& el) {
+    DLLNode<T>* newIn = new DLLNode<T>;
     if (head == NULL) {
-            head = newIn;
-            tail = newIn;
-            newIn->info = el;
-            newIn->next = NULL;
-            newIn->prev = NULL;
+        head = newIn;
+        tail = newIn;
+        newIn->info = el;
+        newIn->next = NULL;
+        newIn->prev = NULL;
     }
-    if(head != NULL) {
-            newIn->info = el;
-            tail->next =newIn ;
-            newIn->prev = tail;
-            newIn->next = NULL;
-            tail = newIn;
+    if (head != NULL) {
+        newIn->info = el;
+        tail->next = newIn;
+        newIn->prev = tail;
+        newIn->next = NULL;
+        tail = newIn;
     }
-} //구현완료
+}
 
 template<class T>
-void DLL<T>::deleteDLLSorted(const string& name){
-    DLLNode<T>* left, * right,* key = new DLLNode<T>, * target = new DLLNode<T>, * tmphead = new DLLNode<T>;
-    bool isDelete=false;
+void DLL<T>::deleteDLLSorted(const string& name) {
+    DLLNode<T>* left, * right, * key = new DLLNode<T>, * target = new DLLNode<T>, * tmphead = new DLLNode<T>;
+    bool isDelete = false;
     tmphead->next = head;
     head->prev = tmphead;
     head = tmphead;
     key->info.m_name = name;
-    for (left = head; left->next!= NULL;) {
+    for (left = head; left->next != NULL;) {
         if (left->next->info.m_name == key->info.m_name) {
             target = left->next; right = target->next;
             if (right != nullptr) {
                 left->next = right; right->prev = left;
             }
-            else if(right==nullptr) {
+            else if (right == nullptr) {
                 left->next = NULL;
                 isDelete++;
                 break;
             }
             isDelete++;
         }
-        left=left->next;
+        left = left->next;
     }
-    head=tmphead->next;
+    head = tmphead->next;
     if (isDelete == true) {
         cout << "제거완료되었습니다." << endl;
     }
     else cout << "국가명을 찾을 수 없습니다." << endl;
-}//구현완료
+}
 
 template<class T>
 void DLL<T>::printtDLLSorted(int option) {
@@ -107,9 +109,7 @@ void DLL<T>::printtDLLSorted(int option) {
         return;
     }
     else {
-        //Current will point to head  
         for (iter = head; iter->next != NULL; iter = iter->next) {
-            //Index will point to node next to current  
             for (index = iter->next; index != NULL; index = index->next) {
                 switch (option) {
                 case 1:
@@ -144,7 +144,7 @@ void DLL<T>::printtDLLSorted(int option) {
                     cout << "잘못된 입력입니다";
                     return;
                 }
-            } //구현완료
+            }
         }
     }
     cout.width(10);
@@ -161,15 +161,24 @@ void DLL<T>::printtDLLSorted(int option) {
         iter = iter->next;
     }
 }
-  
-corona_nation::corona_nation(string name, int num_of_confirmed_p, int num_of_death_p){
+
+template<class T>
+string DLL<T>::Nameformat(string& m_name) {
+    m_name[0] = toupper(m_name[0]);
+    for (int i = 1; i < m_name.size(); i++) {
+        m_name[i] = tolower(m_name[i]);
+        return m_name;
+    }
+}
+
+corona_nation::corona_nation(string name, int num_of_confirmed_p, int num_of_death_p) {
     m_name = name;
     m_num_of_confirmed_p = num_of_confirmed_p;
     m_num_of_death_p = num_of_death_p;
     m_death_rate = ((double)m_num_of_death_p / m_num_of_confirmed_p) * 100;
 }
 
-void corona_nation::print_info(){
+void corona_nation::print_info() {
     cout.width(10);
     cout << m_name;
     cout.width(10);
@@ -194,8 +203,8 @@ int main() {
     DLLdata.AddtoDLLSorted(corona_nation("U.K", 55242, 6159));
     while (true) {
         cout << "----------명령을 선택하십시오----------\n"
-         << "1.새로운 국가데이터를 추가합니다\n"<< "2.데이터를 출력합니다\n"
-         << "3.기존 국가데이터를 삭제합니다\n"<< "4.프로그램 종료\n" << endl;
+            << "1.새로운 국가데이터를 추가합니다\n" << "2.데이터를 출력합니다\n"
+            << "3.기존 국가데이터를 삭제합니다\n" << "4.프로그램 종료\n" << endl;
         cin >> mainMenuSet;
         if ((mainMenuSet < 1) || (mainMenuSet > 4)) {
             printf("잘못 입력하였습니다.\n");
@@ -206,17 +215,14 @@ int main() {
         switch (mainMenuSet) {
         case 1:
             cout << "국가명입력: "; cin >> m_name;
-            m_name[0] = toupper(m_name[0]);
-            for (int i = 1; i < m_name.size(); i++) {
-                m_name[i] = tolower(m_name[i]);
-            }
+            DLLdata.Nameformat(m_name);
             cout << "\n확진자수입력: "; cin >> m_num_of_confirmed;
             cout << "\n사망자수입력: ";  cin >> m_num_of_death;
-            DLLdata.AddtoDLLSorted(corona_nation(m_name,m_num_of_confirmed,m_num_of_death));
+            DLLdata.AddtoDLLSorted(corona_nation(m_name, m_num_of_confirmed, m_num_of_death));
             break;
         case 2:
-            cout << "1.국가명으로 정렬\n" << "2.감염자수로 정렬\n" 
-            << "3.사망자수로 정렬\n" << "4.사망률로 정렬\n";
+            cout << "1.국가명으로 정렬\n" << "2.감염자수로 정렬\n"
+                << "3.사망자수로 정렬\n" << "4.사망률로 정렬\n";
             cin >> subMenuSet;
             if ((subMenuSet < 1) || (subMenuSet > 4)) {
                 printf("잘못 입력하였습니다.\n");
@@ -228,6 +234,7 @@ int main() {
             break;
         case 3:
             cout << "삭제하고 싶은 나라 이름을 입력하세요:"; cin >> delInput;
+            DLLdata.Nameformat(delInput);
             DLLdata.deleteDLLSorted(delInput);
             break;
         case 4:
@@ -235,3 +242,5 @@ int main() {
         }
     }
 }
+//4/21 소트알고리즘완성
+//4/22 국가명 대소문자 보정, 스위치 예외처리 추가
