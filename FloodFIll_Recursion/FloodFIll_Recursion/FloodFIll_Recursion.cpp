@@ -1,20 +1,95 @@
 ﻿// FloodFIll_Recursion.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
 //
-
+#include <cstdlib>
 #include <iostream>
+#include <vector>
+using namespace std;
+
+template<class T>
+class WBcheck {
+public:
+	WBcheck() {};
+	~WBcheck() {};
+	void init();
+	void display();
+	void findWhite(int x, int y);
+	void result();
+
+private:
+	const bool w=true, b=false; 
+	int i=0, j=0, k=0;
+	int count[64];
+	int block[9][9];
+	const short pass=2;
+};
+
+
+template<class T>
+void WBcheck<T>::init() {
+	for (i = 0; i <= 7; i++) {
+		for (j = 0; j <= 7; j++) {
+			if (rand() % 2 == 0) block[i][j] = b;
+			else block[i][j] = w;
+		}
+	}
+	display();
+}
+//최종본에서는 init와 display를 합칠것
+template<class T>
+void WBcheck<T>::display() {
+	for (i = 0; i <= 7; i++) {
+		for (j = 0; j <= 7; j++) {
+			cout << (int)block[i][j]<<" ";
+		}
+		cout << endl;
+	}
+	
+	for (i = 0; i <= 7; i++) {
+		for (j = 0; j <= 7; j++) {	
+			count[k]=0;
+			findWhite(i,j);
+			k++;
+		}
+	}
+	
+}
+
+template<class T>
+void WBcheck<T>::findWhite(int x, int y){
+	if (block[x][y]==w){
+		block[x][y]=pass;
+		count[k]++;
+		if (x+1!=8)findWhite(x+1,y);	
+		if (y+1!=8)findWhite(x,y+1);
+		if (x-1!=-1)findWhite(x-1,y);
+		if (y-1!=-1)findWhite(x,y-1);
+	}
+}
+
+template<class T>
+void WBcheck<T>::result(){
+	int k=0;
+	while(k<=64){
+		if (count[k]>0){
+			cout << count[k]<<endl;
+		}
+		k++;
+	}
+	
+}
 
 int main()
 {
+	WBcheck<void> opr;
+
+	opr.init();
+	opr.result();
     std::cout << "Hello World!\n";
+	return 0;
 }
 
-// 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴
-// 프로그램 디버그: <F5> 키 또는 [디버그] > [디버깅 시작] 메뉴
-
-// 시작을 위한 팁: 
-//   1. [솔루션 탐색기] 창을 사용하여 파일을 추가/관리합니다.
-//   2. [팀 탐색기] 창을 사용하여 소스 제어에 연결합니다.
-//   3. [출력] 창을 사용하여 빌드 출력 및 기타 메시지를 확인합니다.
-//   4. [오류 목록] 창을 사용하여 오류를 봅니다.
-//   5. [프로젝트] > [새 항목 추가]로 이동하여 새 코드 파일을 만들거나, [프로젝트] > [기존 항목 추가]로 이동하여 기존 코드 파일을 프로젝트에 추가합니다.
-//   6. 나중에 이 프로젝트를 다시 열려면 [파일] > [열기] > [프로젝트]로 이동하고 .sln 파일을 선택합니다.
+//if (rand()%2==0)block[i][j]=b;
+//else block[i][j] = w;
+//x y배열을 사용한다 WBconvert(x,y)
+//배열의 상하좌우를 탐색하여 white를 찾아 재귀한다
+//출력은 5 white areas of 1 , 21 ,10 and 2 cells.의 규격으로
