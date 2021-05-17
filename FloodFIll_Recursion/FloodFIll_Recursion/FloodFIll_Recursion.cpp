@@ -6,104 +6,105 @@
 using namespace std;
 
 template<class T>
-class WBcheck {
+class FloodFill {
 public:
-	WBcheck() {};
-	~WBcheck() {};
+	FloodFill() {};
+	~FloodFill() {};
 	void init();
-	void findWhite_ctrl();
-	void findWhite(int x, int y);
-	bool result();
+	void WBconvert_ctrl();
+	void WBconvert(int x, int y);
+	void result();
 
 private:
 	const bool w = true, b = false;
-	const short pass = 2;
-
-	int i = 0, j = 0, k = 0;
-
+	int x = 0, y = 0, context = 0;
 	int count[64];
 	int block[8][8];
 };
 
 
 template<class T>
-void WBcheck<T>::init() {
-	srand((unsigned int)time(NULL));
+void FloodFill<T>::init() {
+	srand((unsigned int)time(NULL));//난수생성
 	cout << "Created pattern is:" << endl;
-	for (i = 0; i <= 7; i++) {
-		for (j = 0; j <= 7; j++) {
-			if (rand() % 2 == 0) block[i][j] = b;
-			else block[i][j] = w;
-			cout << (int)block[i][j] << " ";
+	for (x = 0; x <= 7; x++) {
+		for (y = 0; y <= 7; y++) {
+			if (rand() % 2 == 0) block[x][y] = b;
+			else block[x][y] = w;
+			cout << (int)block[x][y] << " ";
 		}
 		cout << endl;
 	}
 }
 
 template<class T>
-void WBcheck<T>::findWhite_ctrl() {
-	for (i = 0; i <= 7; i++) {
-		for (j = 0; j <= 7; j++) {
-			count[k] = 0;
-			findWhite(i, j);
-			k++;
+void FloodFill<T>::WBconvert_ctrl() {
+	for (x = 0; x <= 7; x++) {
+		for (y = 0; y <= 7; y++) {
+			count[context] = 0;
+			WBconvert(x, y);
+			context++;
 		}
 	}
 }
 
 template<class T>
-void WBcheck<T>::findWhite(int x, int y) {
+void FloodFill<T>::WBconvert(int x, int y) {
 	if (block[x][y] == w) {
-		block[x][y] = pass;
-		count[k]++;
-		if (x + 1 != 8)findWhite(x + 1, y);
-		if (y + 1 != 8)findWhite(x, y + 1);
-		if (x - 1 != -1)findWhite(x - 1, y);
-		if (y - 1 != -1)findWhite(x, y - 1);
+		block[x][y] = b;
+		count[context]++;
+		if (x + 1 != 8)WBconvert(x + 1, y);               //Recursion
+		if (y + 1 != 8)WBconvert(x, y + 1);
+		if (x - 1 != -1)WBconvert(x - 1, y);
+		if (y - 1 != -1)WBconvert(x, y - 1);
 	}
 }
 
 template<class T>
-bool WBcheck<T>::result() {
-	int k = 0, i = 0;
-	int size = 0;
+void FloodFill<T>::result() {
+	int i = 0, size = 0;
+	context = 0;
+	stack <int> reversedRes;
 	stack <int> res;
 
-	while (k <= 63) {
-		if (count[k] > 0) {
-			res.push(count[k]);
+	while (context <= 63) {
+		if (count[context] > 0) {
+			reversedRes.push(count[context]);
 			size++;
 		}
-		k++;
+		context++;
 	}
-	
+	while (!reversedRes.empty()) {
+		res.push(reversedRes.top());
+		reversedRes.pop();
+	}
 	cout << size << " white areas of ";
 	while (i <= (size - 2)) {
 		cout << res.top() << ", ";
 		res.pop();
 		i++;
-	}
-	cout <<"and "<< res.top() << " cells";
+		}
+	cout << "and " << res.top() << " cells";
 	res.pop();
-
-	if (res.empty() == false) return 1;
 }
 
-int main(){
-	WBcheck<void> opr;
-
+int main() {
+	FloodFill<void> opr;
+	bool re = 0;
+	cout << "-재귀함수를 사용하는 4방향 FloodFill 구현 201721565손민우-\n\n";
 	cout << "1 as Whitecells, 0 as Blackcells" << endl;
 	opr.init();
-	cout << endl;
-	opr.findWhite_ctrl();
-	cout << endl;
+	opr.WBconvert_ctrl();
 	opr.result();
 	cout << endl;
+
+	cout << "\n\nretry ?  0 to no,  1 to yes\n"; cin >> re;
+	if (re == 1)  main();      //Recursion!
 	return 0;
 }
 
-//if (rand()%2==0)block[i][j]=b;
-//else block[i][j] = w;
-//x y배열을 사용한다 WBconvert(x,y)
-//배열의 상하좌우를 탐색하여 white를 찾아 재귀한다
+//if (rand()%2==0)block[x][y]=b;에서 	srand((unsigned int)time(NULL)); 난수생성
+//x y배열을 사용한다 WBconvert(x,y), 디버그편의성을위해 2개 함수로 분리
+//배열의 상하좌우를 탐색하여 white를 찾아 재귀한다. white는 black으로 변환
+//외곽을 0으로 채우는것대신 배열을 벗어나지 않도록 제어문 사용
 //출력은 5 white areas of 1 , 21 ,10 and 2 cells.의 규격으로
