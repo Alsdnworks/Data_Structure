@@ -83,7 +83,7 @@ void FloodFill<T>::result() {
 		cout << res.top() << ", ";
 		res.pop();
 		i++;
-		}
+	}
 	cout << "and " << res.top() << " cells";
 	res.pop();
 }
