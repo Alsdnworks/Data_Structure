@@ -21,11 +21,10 @@ public:
     double priorty;
     Node*left , * right;
     Node* root;
-    bool setRoot(string val, double prior);
-    bool insertNode(string value, double priorty, Node* refer);
+    bool setRoot(const T& val, double prior);
+    bool insertNode(const T& value, double priorty, Node* refer);
     bool processData();
-private:
-
+  
    };
 
 
@@ -36,9 +35,12 @@ typedef struct context {
     double rate_of_death = ((double)num_of_death / num_of_confirmed) * 100;
 }context;
 vector<context>list;
+//bool newData(string name, int num_of_confirmed, int num_of_death) {
+//    list.push_back({ name, num_of_confirmed, num_of_death });
+//}
 
 template<class T>
-bool Node<T>:: setRoot(string val, double prior) {
+bool Node<T>:: setRoot(const T& val, double prior) {
     Node *newNode =new Node;
     newNode->priorty = prior;
     newNode->value=val;
@@ -49,29 +51,45 @@ bool Node<T>:: setRoot(string val, double prior) {
 }
 
 template<class T>
-bool Node<T>::insertNode(string value, double priorty, Node* refer) {
-    if (0 < value.compare(refer->value)) {
+bool Node<T>::insertNode(const T& value, double priorty, Node* refer) {
+    if (0 < value.name.compare(refer->value.name)) {
         if (refer->right == NULL) {
             Node* newNode = new Node;
             refer->right = newNode;
             newNode->value = value;
             newNode->priorty = priorty;
+            if (priorty > refer->value.rate_of_death) {
+            //rotateleft
+                Node* upper = newNode;
+                Node* downer = upper->left;
+                upper->left = refer;
+                newNode = downer;
+                refer->right = NULL;
+            }
             return true;
         }
         else insertNode(value, priorty, refer->right);
     }
-    if (0 > value.compare(refer->value)) {
+    if (0 > value.name.compare(refer->value.name)) {
         if (refer->left == NULL) {
             Node* newNode = new Node;
             refer->left = newNode;
             newNode->value = value;
             newNode->priorty = priorty;
+            if (priorty > refer->value.rate_of_death) {
+                //rotateright
+                Node* upper = newNode;
+                Node* downer = upper->right;
+                upper->right = refer;
+                newNode = downer;
+                refer->left = NULL;
+            }
             return true;
         }
         else insertNode(value, priorty, refer->left);
     }
-    if (0 == value.compare(refer->value)) {
-        cout << "중복되는 value"<<value<<endl;
+    if (0 == value.name.compare(refer->value.name)) {
+        cout << "중복되는 value"<<value.name<<endl;
         return false;
     }
 }
@@ -82,12 +100,11 @@ bool Arg_Data(const context& a, const context& b) {
 
 template<class T>
 bool Node<T>::processData() {
-    sort(list.begin(), list.end(), Arg_Data);
-    setRoot(list[0].name, list[0].rate_of_death);
+    setRoot(list[0], list[0].rate_of_death);
     cout << "다음데이터를 Treap처리합니다 " << "\n" << list[0].name << "\n" << list[0].num_of_confirmed << "\n" << list[0].num_of_death << "\n" << list[0].rate_of_death << "\n" << "\n" << endl;
 
     for (int i = 1; i < list.size(); i++) {
-        insertNode(list[i].name, list[i].rate_of_death,root);
+        insertNode(list[i], list[i].rate_of_death,root);
         cout <<"다음데이터를 Treap처리합니다 " << "\n" << list[i].name<<"\n" << list[i].num_of_confirmed<<"\n" << list[i].num_of_death<<"\n" << list[i].rate_of_death<<"\n" << "\n" << endl;
     }
     return true;
@@ -97,8 +114,8 @@ bool Node<T>::processData() {
 //}
 
 int main() {
-    Node <string> nodedata;
-
+    Node <context> nodedata;
+    
     list.push_back({ "Ftest", 100, 75 });
     list.push_back({ "Atest", 100, 55 });
     list.push_back({ "Dtest", 100, 60 });
@@ -110,3 +127,9 @@ int main() {
     
     return 0;
 }
+//may 31 1400 first commit
+//may 31 2200 템플릿, 틀잡기완료
+//June 1  0100 입출력구조, 구조체 입력완료
+//June 1  0400 데이터삽입구현, 테스트용 자동입력코드 제거(리팩토링)
+//June 1  0700 삭제구현완료
+//June 1  0900 relese
