@@ -1,4 +1,44 @@
-﻿#include"data.cpp"
+﻿#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+template <class T>
+class Node {
+public:
+    Node() {
+        left = right = NULL;
+    }
+    Node(const T& val, const double& pri, Node* l = NULL, Node* r = NULL) {
+        value = val;
+        priorty = pri;
+        left = l;
+        right = r;
+    }
+    ~Node() {};
+    T value;
+    double priorty;
+    Node* left, * right;
+    Node* root;
+    int searchInit = 0;
+    bool setRoot(const T& val, double prior);
+    bool insertNode(const T& value, double priorty, Node* refer);
+    bool processData();
+    void isRoot(Node* chkNode);
+    void nodeify(string m_name, int m_num_of_confirmed, int m_num_of_death);
+    void searchname(string s_name);
+    void search(string s_name, Node* refer);
+};
+
+typedef struct context {
+    string name;
+    int num_of_confirmed;
+    int num_of_death;
+    double rate_of_death = ((double)num_of_death / num_of_confirmed) * 100;
+} context;
+vector<context> list;
 
 template <class T>
 bool Node<T>::setRoot(const T& val, double prior) {
@@ -30,12 +70,12 @@ template <class T>
 void Node<T>::search(string s_name, Node* refer) {
     if (s_name < (refer->value.name)) {
         if (refer->left == NULL)
-            cout << "찾을수없습니다.";
+            cout << "찾을수없습니다."<<endl;
         else search(s_name, refer->left);
     }
     if (s_name > (refer->value.name)) {
         if (refer->right == NULL)
-            cout << "찾을수없습니다.";
+            cout << "찾을수없습니다." << endl;
         else search(s_name, refer->right);
     }
     if (s_name == refer->value.name)
@@ -112,7 +152,7 @@ bool Node<T>::insertNode(const T& value, double priorty, Node* refer) {
 template <class T>
 bool Node<T>::processData() {
     setRoot(list[0], list[0].rate_of_death);
-    cout << "다음데이터를 Treap처리합니다 "
+    cout << "다음데이터를 임시 루트로 설정합니다. "
         << "\n" << list[0].name << "\n" << list[0].num_of_confirmed << "\n"
         << list[0].num_of_death << "\n" << list[0].rate_of_death << "\n"
         << "\n" << endl;
@@ -126,11 +166,12 @@ bool Node<T>::processData() {
     return true;
 }
 int main() {
-    string a;
-    int b;
-    int c;
+    bool Init=false;
+    int mainMenuSet;
+    string m_name;
+    int m_num_of_confirmed;
+    int m_num_of_death;
     Node<context> nodedata;
-    nodedata.InitData();
     list.push_back({ "Dtest", 100, 60 });
     list.push_back({ "Htest", 100, 14 });
     list.push_back({ "Ftest", 100, 75 });
@@ -138,14 +179,39 @@ int main() {
     list.push_back({ "Ctest", 100, 70 });
     list.push_back({ "Jtest", 100, 45 });
     list.push_back({ "Itest", 100, 65 });
-    nodedata.processData();
-
-    cin >> a; /*
-    cin >> b;
-    cin >> c;
-    nodedata.nodeify(a, b, c);
-    nodedata.searchname(a);*/
-
+    Init=nodedata.processData();
+    if (Init == true) cout << "데이터 초기화완료" << endl;
+    cout << "데이터구조::Treap을 사용하는 코로나 발병리스트 \n\n";
+    while (true) {
+        cout << "\n\n----------명령을 선택하십시오----------\n"
+            << "1.새로운 국가데이터를 추가합니다\n" << "2.데이터를 검색합니다\n"
+            << "3.기존 국가데이터를 삭제합니다\n" << "4.프로그램 종료\n" << endl;
+        cin >> mainMenuSet;
+        if ((mainMenuSet < 1) || (mainMenuSet > 4)) {
+            printf("잘못 입력하였습니다.\n");
+            cin.clear();//내용초기화
+            cin.ignore(100, '\n');//무시할 명령어의수와 이그노어 종료키 
+            continue;
+        }
+        switch (mainMenuSet) {
+        case 1:
+            cout << "국가명입력: "; cin >> m_name;
+            cout << "\n확진자수입력: "; cin >> m_num_of_confirmed;
+            cout << "\n사망자수입력: ";  cin >> m_num_of_death;
+            nodedata.nodeify(m_name, m_num_of_confirmed, m_num_of_death);
+            break;
+        case 2:
+            cout << "국가명입력: "; cin >> m_name;
+            nodedata.searchname(m_name);
+            break;
+        case 3:
+            cout << "구현중입니다.";
+            cout << "삭제하고 싶은 나라 이름을 입력하세요:";
+            break;
+        case 4:
+            exit(0);
+        }
+    }
     return 0;
 }
 //may 31 1400 first commit
