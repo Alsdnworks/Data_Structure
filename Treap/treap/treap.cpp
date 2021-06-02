@@ -84,6 +84,7 @@ void Node<T>::initNode(Node*& root, T& value, double priorty) { //루트위치�
         if (root->right != NULL && root->right->value.rate_of_death > root->value.rate_of_death)
             rotateLeft(root);
     }
+    
 }
 template <class T>
 void Node<T>::rotateRight(Node*& root) {
@@ -126,7 +127,7 @@ void Node<T>::searchNode(string s_name, Node* refer) {
     }
     if (s_name > (refer->value.name)) {
         if (refer->right == NULL)
-            cout << "찾을수없습니다." << endl;
+            cout << "찾을 수 없습니다." << endl;
         else searchNode(s_name, refer->right);
     }
     //찾는값이 노드랑 일치하지 않음 보다 큰 알파벳 오른쪽 탐색, 작은 좌측 탐색,찾는값이면 출력,리프노드인데 찾는값이 없다? 미확인표시
@@ -143,12 +144,12 @@ void Node<T>::deleteNode(Node*& root, string name) {
     if (name != (root->value.name)) {
         if (name < (root->value.name)) {
             if (root->left == NULL)
-                cout << "찾을수없습니다." << endl;
+                cout << "찾을 수 없습니다." << endl;
             else deleteNode(root->left, name);
         }
         if (name > (root->value.name)) {
             if (root->right == NULL)
-                cout << "찾을수없습니다." << endl;
+                cout << "찾을 수 없습니다." << endl;
             else deleteNode(root->right, name);
         }
     }
@@ -156,7 +157,7 @@ void Node<T>::deleteNode(Node*& root, string name) {
         if (root->left == NULL && root->right == NULL) {
             delete root;
             root = NULL;
-            cout << "삭제됨." << endl;
+            cout << "삭제완료(make leaf node successed)" << endl;
         }
         else if (root->left && root->right) {
             if (root->left->value.num_of_death < root->right->value.num_of_death) {
@@ -173,7 +174,7 @@ void Node<T>::deleteNode(Node*& root, string name) {
             Node* temp = root;
             root = leaf;
             delete temp;
-            cout << "삭제됨." << endl;
+            cout << "삭제완료(leaf node merged)" << endl;
         }
     }
 }
@@ -201,8 +202,8 @@ int main() {
     cout << "\n\n데이터구조::Treap을 사용하는 코로나 발병리스트 ";
     while (true) {
         cout << "\n\n----------명령을 선택하십시오----------\n"
-            << "1.새로운 국가데이터를 추가합니다\n" << "2.데이터를 검색합니다\n"
-            << "3.기존 국가데이터를 삭제합니다\n" << "4.모든 데이터 출력\n" << "5.프로그램 종료\n" << endl;
+            << "1.새로운 국가데이터를 추가\n" << "2.데이터 검색\n"
+            << "3.기존 국가데이터를 삭제\n" << "4.모든 데이터 출력\n" << "5.프로그램 종료\n" << endl;
         cin >> mainMenuSet;
         if ((mainMenuSet < 1) || (mainMenuSet > 5)) {
             printf("잘못 입력하였습니다.\n");
@@ -216,13 +217,14 @@ int main() {
             cout << "\n확진자수입력: "; cin >> m_num_of_confirmed;
             cout << "\n사망자수입력: ";  cin >> m_num_of_death;
             nodedata.insertNode(m_name, m_num_of_confirmed, m_num_of_death);
+            cout << "입력 완료" << endl;
             break;
         case 2:
             cout << "국가명입력: "; cin >> m_name;
             nodedata.accessRoot(m_name, 0);
             break;
         case 3:
-            cout << "삭제하고 싶은 나라 이름을 입력하세요:";
+            cout << "삭제할 국가명을 입력하십시오:";
             cin >> m_name;
             nodedata.accessRoot(m_name, 1);
             break;
