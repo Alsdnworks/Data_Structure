@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include<stack>
 
 using namespace std;
 
@@ -31,6 +32,8 @@ public:
     void searchNode(string s_name, Node* refer);
     void deleteNode(Node*& root, string name);
     void showNode(Node*& root);
+    void sortNodeKey(Node*& root);
+
 };
 
 typedef struct context {
@@ -40,6 +43,7 @@ typedef struct context {
     double rate_of_death = ((double)num_of_death / num_of_confirmed) * 100;
 } context;
 vector<context> list;
+stack<context>st1;
 void pushData();
 
 
@@ -77,14 +81,15 @@ void Node<T>::initNode(Node*& root, T& value, double priorty) { //루트위치�
     else if (value.name < root->value.name) {
         initNode(root->left, value, priorty);
         if (root->left != NULL && root->left->value.rate_of_death > root->value.rate_of_death)
-            rotateRight(root);
+          
+  rotateRight(root);
     }
     else {
         initNode(root->right, value, priorty);
         if (root->right != NULL && root->right->value.rate_of_death > root->value.rate_of_death)
             rotateLeft(root);
     }
-    
+
 }
 template <class T>
 void Node<T>::rotateRight(Node*& root) {
@@ -116,6 +121,8 @@ void Node<T>::accessRoot(string s_name, int operation) {
         deleteNode(root, s_name);
     if (operation == 2)
         showNode(root);
+    if (operation == 3)
+        sortNodeKey(root);
 }
 
 template <class T>
@@ -144,12 +151,12 @@ void Node<T>::deleteNode(Node*& root, string name) {
     if (name != (root->value.name)) {
         if (name < (root->value.name)) {
             if (root->left == NULL)
-                cout << "찾을 수 없습니다." << endl;
+                cout << "찾을수없습니다." << endl;
             else deleteNode(root->left, name);
         }
         if (name > (root->value.name)) {
             if (root->right == NULL)
-                cout << "찾을 수 없습니다." << endl;
+                cout << "찾을수없습니다." << endl;
             else deleteNode(root->right, name);
         }
     }
@@ -157,7 +164,7 @@ void Node<T>::deleteNode(Node*& root, string name) {
         if (root->left == NULL && root->right == NULL) {
             delete root;
             root = NULL;
-            cout << "삭제완료(make leaf node successed)" << endl;
+            cout << "1유형삭제됨." << endl;
         }
         else if (root->left && root->right) {
             if (root->left->value.num_of_death < root->right->value.num_of_death) {
@@ -174,21 +181,91 @@ void Node<T>::deleteNode(Node*& root, string name) {
             Node* temp = root;
             root = leaf;
             delete temp;
-            cout << "삭제완료(leaf node merged)" << endl;
+            cout << "2유형삭제됨." << endl;
         }
     }
 }
 
+/*
+template <class T>
+void Node<T>::deleteNode(Node*& root, string name) {
+    if (name == "root") {
+        cout << "루트노드 " << root->value.name << "을 삭제합니다" << endl;
+        deleteNode(root, root->value.name);
+    }
+    else if (name != (root->value.name)) {
+        if (name < (root->value.name)) {
+            if (root->left == NULL)
+                cout << "찾을 수 없습니다." << endl;
+            else deleteNode(root->left, name);
+        }
+        if (name > (root->value.name)) {
+            if (root->right == NULL)
+                cout << "찾을 수 없습니다." << endl;
+            else deleteNode(root->right, name);
+        }
+    }
+    else {
+        if (root->left == NULL && root->right == NULL) {
+            delete root;
+            root = NULL;
+            cout << "삭제완료(leaf node delete successed)" << endl;
+        }//역순
+        else if (root->left && root->right) {
+            if (root->left->value.num_of_death < root->right->value.num_of_death) {
+                rotateLeft(root);
+                deleteNode(root->left, name);
+            }
+            else {
+                rotateRight(root);
+                deleteNode(root->right, name);
+            }
+        }
+        else {
+            Node* leaf = (root->left) ? root->left : root->right;
+            Node* temp = root;
+            root = leaf;
+            delete temp;
+            cout << "삭제완료(leaf node merge successful)" << endl;
+        }
+    }
+}
+*/
 template <class T>
 void Node<T>::showNode(Node*& root) {
     if (root == NULL) return;
-    showNode(root->left);
+    showNode(root->right);
     cout << (string)root->value.name << "에 대한 자료입니다" << endl
         << "확진자" << (int)root->value.num_of_confirmed << "명, 사망자"
         << (int)root->value.num_of_death << "명, 치명률"
         << (double)root->value.rate_of_death << "%" << endl;
-    showNode(root->right);
+    showNode(root->left);
 }
+
+
+
+
+
+
+template <class T>
+void Node<T>::sortNodeKey(Node*& root) {
+    while (root) {
+        st1.push(root->value);
+        deleteNode(root, root->value.name);
+    }
+    while (!st1.empty()) {
+        insertNode(st1.top().name, st1.top().num_of_confirmed, st1.top().num_of_death);
+        cout << st1.top().name << "에 대한 자료입니다" << endl
+            << "확진자" << st1.top().num_of_confirmed << "명, 사망자"
+            << st1.top().num_of_death << "명, 치명률"
+            << st1.top().rate_of_death << "%" << endl;
+        st1.pop();
+    }
+}
+
+
+
+
 int main() {
     bool Init = false;
     int mainMenuSet;
@@ -203,9 +280,9 @@ int main() {
     while (true) {
         cout << "\n\n----------명령을 선택하십시오----------\n"
             << "1.새로운 국가데이터를 추가\n" << "2.데이터 검색\n"
-            << "3.기존 국가데이터를 삭제\n" << "4.모든 데이터 출력\n" << "5.프로그램 종료\n" << endl;
+            << "3.기존 국가데이터를 삭제\n" << "4.모든 데이터 출력()\n" << "5.프로그램 종료\n" << endl;
         cin >> mainMenuSet;
-        if ((mainMenuSet < 1) || (mainMenuSet > 5)) {
+        if ((mainMenuSet < 1) || (mainMenuSet > 10)) {
             printf("잘못 입력하였습니다.\n");
             cin.clear();//내용초기화
             cin.ignore(100, '\n');//무시할 명령어의수와 이그노어 종료키 
@@ -224,7 +301,7 @@ int main() {
             nodedata.accessRoot(m_name, 0);
             break;
         case 3:
-            cout << "삭제할 국가명을 입력하십시오:";
+            cout << "삭제할 국가명을 입력하십시오, root를  입력해 루트노트를 삭제가능합니다.";
             cin >> m_name;
             nodedata.accessRoot(m_name, 1);
             break;
@@ -232,10 +309,15 @@ int main() {
             nodedata.accessRoot(m_name, 2);
             break;
         case 5:
+            nodedata.accessRoot(m_name, 3);
+            break;
+        case 6:
             exit(0);
+            break;
         }
     }
-    return 0;
+
+return 0;
 }
 
 //may 31 1400 first commit
@@ -250,18 +332,21 @@ int main() {
 //June 2  2100 삭제구현완료
 //June 2  2300 최종리팩토링,테스트용 자동입력코드 제거
 //June 3  0100 relese
+//June 8  1420 root삭제 추가
+//June 11 1910 출력방식변경(value기반 출력)
 void pushData() {
-    list.push_back({ "Algeria", 126860, 3418 });
-    list.push_back({ "Angola", 32441, 725 });
-    list.push_back({ "Benin", 8025, 101 });
-    list.push_back({ "Botswana", 54151, 784 });
-    list.push_back({ "Burkina_Faso", 13415, 165 });
-    list.push_back({ "Burundi", 4494, 6 });
-    list.push_back({ "Cameroon", 77733, 1239 });
-    list.push_back({ "Cape_Verde", 29334, 256 });
-    list.push_back({ "Central_African_Republic", 7079, 97 });
-    list.push_back({ "Chad", 4924, 173 });
-    list.push_back({ "Comoros", 3872, 146 });
+    list.push_back({ "Spain", 140510, 13798 });
+    list.push_back({ "Italy", 135586, 17127 });
+    list.push_back({ "Germany", 107591, 2012 });
+    list.push_back({ "China", 81802, 3333 });
+    list.push_back({ "France", 78167, 10328 });
+    list.push_back({ "Iran", 62589, 3872 });
+    list.push_back({ "U.K", 55242, 6159 });
+    list.push_back({ "Japan",207591, 15487 });
+    list.push_back({ "Korea",104521, 14567 });
+    list.push_back({ "U.S",545247, 42348 });
+}
+    /*list.push_back({ "Comoros", 3872, 146 });
     list.push_back({ "Congo", 11476, 150 });
     list.push_back({ "Cote_dIvoire", 46942, 298 });
     list.push_back({ "Democratic_Republic_of_the_Congo", 30863, 779 });
@@ -463,5 +548,5 @@ void pushData() {
     list.push_back({ "Papua_New_Guinea", 15133, 154 });
     list.push_back({ "Solomon_Islands", 20, 0 });
     list.push_back({ "Vanuatu", 3,0 });
-    list.push_back({ "Wallis_and_Futuna", 445, 7 });
-}
+    list.push_back({ "Wallis_and_Futuna", 445, 7 });*/
+
